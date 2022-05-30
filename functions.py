@@ -5,7 +5,10 @@ from dash import html, dcc
 from geo_df import GDF
 import folium as fl
 
-from app import DATA_PATH
+''' PATH ----------------------------------------------------------------- '''
+
+PATH = pathlib.Path(__file__).parent
+DATA_PATH = PATH.joinpath("./data").resolve()
 
 
 '''

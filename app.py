@@ -11,12 +11,6 @@ import pathlib
 from functions import *
 
 
-''' PATH ----------------------------------------------------------------- '''
-
-PATH = pathlib.Path(__file__).parent
-DATA_PATH = PATH.joinpath("./data").resolve()
-
-
 ''' APP ------------------------------------------------------------------ '''
 
 app = Dash(__name__, suppress_callback_exceptions=True,
