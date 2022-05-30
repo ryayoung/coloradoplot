@@ -39,7 +39,7 @@ class DomUtils {
     }
   }
 
-DomUtils.disableScroll()
+// DomUtils.disableScroll()
 
 var header;
 var btnHide;
@@ -55,14 +55,24 @@ document.addEventListener('mouseover', function(e) {
     }
 });
 
-// document.addEventListener('scroll', function(e) {
-//     var map = document.getElementsByClassName('map-box')[0];
-//     var pos = map.getBoundingClientRect().top;
-//     if (pos <= 10 && pos > 1 && btnShow.style.visibility == 'hidden') {
-//         hideHeader()
-//         btnShow.style.visibility = 'visible'
-//     }
-// });
+document.addEventListener('mouseover', function(e) {
+    if (typeof(header) === 'undefined' || typeof(btnHide) === 'undefined' || typeof(btnShow) === 'undefined') {
+        header = document.getElementsByClassName('header')[0];
+        btnHide = document.getElementsByClassName('hide-header-btn')[0];
+        btnShow = document.getElementsByClassName('show-header-btn')[0];
+        btnHide.addEventListener('click', hideHeader);
+        btnShow.addEventListener('click', showHeader);
+    }
+});
+
+document.addEventListener('scroll', function(e) {
+    var map = document.getElementsByClassName('map-box')[0];
+    var pos = map.getBoundingClientRect().top;
+    if (pos <= 10) {
+        hideHeader()
+        btnShow.style.visibility = 'visible'
+    }
+});
 
 function showHeader() {
     header.style.display = 'block';
@@ -72,6 +82,7 @@ function showHeader() {
 function hideHeader() {
     header.style.display = 'none';
     btnShow.style.visibility = 'visible';
+    document.documentElement.scrollTop = 0;
 }
 
 
