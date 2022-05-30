@@ -101,7 +101,7 @@ def add_marks(m, df, loc, var_name, tooltip_title=None):
 def plot_county(df, by_1, dist, year,
         by_2,
         details_1,
-        point_scale,
+        mark_scale,
         show_alt,
         show_alt_marks,
         reverse_cmap,
@@ -112,9 +112,6 @@ def plot_county(df, by_1, dist, year,
     highlight_kwds=dict( fillOpacity=0.8 )
 
     df = df[df.year == year]
-
-    if details_1 == None or details_1 == []:
-        details_1 = [by_1]
 
     if reverse_cmap == True:
         cmap = f'{cmap}_r'
@@ -132,11 +129,11 @@ def plot_county(df, by_1, dist, year,
 
         dist_map = dist.explore(style_kwds=dict(fill=False, color='#bababa', weight=4), zoom_start=ZOOM)
 
-        result = main.explore(tooltip=['county']+details_1, column=main[by_1],
+        result = main.explore(tooltip=['county']+[by_1]+details_1, column=main[by_1],
                     m=dist_map, cmap=cmap, **color_range,
                     style_kwds=style_kwds, highlight_kwds=highlight_kwds)
     else:
-        result = main.explore(tooltip=['county']+details_1, column=main[by_1],
+        result = main.explore(tooltip=['county']+[by_1]+details_1, column=main[by_1],
                     cmap=cmap, **color_range,
                     style_kwds=style_kwds, highlight_kwds=highlight_kwds, zoom_start=ZOOM)
     
@@ -144,7 +141,7 @@ def plot_county(df, by_1, dist, year,
         result = add_marks(result, dist, 'geo_dist_point', 'dist', 'School District')
     
     if by_2:
-        result = add_points(result, main, 'geo_county_point', by_2, point_scale)
+        result = add_points(result, main, 'geo_county_point', by_2, mark_scale)
 
     return result
 
@@ -153,7 +150,7 @@ def plot_county(df, by_1, dist, year,
 def plot_edu_dist(df, by_1,
         by_2,
         details_1,
-        point_scale,
+        mark_scale,
         show_county,
         show_county_marks,
         reverse_cmap,
@@ -164,9 +161,6 @@ def plot_edu_dist(df, by_1,
     highlight_kwds=dict( fillOpacity=0.8 )
 
 
-    if details_1 == None or details_1 == []:
-        details_1 = [by_1]
-    
     if reverse_cmap == True:
         cmap = f'{cmap}_r'
 
@@ -177,28 +171,28 @@ def plot_edu_dist(df, by_1,
 
         county_map = county.explore(style_kwds=dict(fill=False, color='gray', weight=4), zoom_start=ZOOM)
 
-        result = main.explore(tooltip=['dist']+details_1, column=main[by_1],
+        result = main.explore(tooltip=['dist']+[by_1]+details_1, column=main[by_1],
                     m=county_map, cmap=cmap, vmin=0, vmax=100,
                     style_kwds=style_kwds, highlight_kwds=highlight_kwds)
     else:
-        result = main.explore(tooltip=['dist']+details_1, column=main[by_1],
+        result = main.explore(tooltip=['dist']+[by_1]+details_1, column=main[by_1],
                     cmap=cmap, vmin=0, vmax=100,
                     style_kwds=style_kwds, highlight_kwds=highlight_kwds, zoom_start=ZOOM)
     
     if by_2:
-        result = add_points(result, main, 'geo_dist_point', by_2, point_scale)
+        result = add_points(result, main, 'geo_dist_point', by_2, mark_scale)
     return result
 
 
 
 def plot(agg, df_all, df_edu, year, by_1, by_2,
-        details_1:list      =None,
-        point_scale:float   =10,
+        details_1:list      =[],
+        mark_scale:float   =15,
         show_alt:bool      =False,
         show_alt_marks:bool=False,
         reverse_cmap:bool   =True,
     ):
     if agg == 'County':
-        return plot_county(df_all, by_1, df_edu, year, by_2, details_1, point_scale, show_alt, show_alt_marks, reverse_cmap)
+        return plot_county(df_all, by_1, df_edu, year, by_2, details_1, mark_scale, show_alt, show_alt_marks, reverse_cmap)
     
-    return plot_edu_dist(df_edu, by_1, by_2, details_1, point_scale, show_alt, show_alt_marks, reverse_cmap)
+    return plot_edu_dist(df_edu, by_1, by_2, details_1, mark_scale, show_alt, show_alt_marks, reverse_cmap)
