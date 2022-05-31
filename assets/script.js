@@ -1,6 +1,4 @@
 class DomUtils {
-    // left: 37, up: 38, right: 39, down: 40,
-    // spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
     static keys = { 37: 1, 38: 1, 39: 1, 40: 1 };
   
     static preventDefault(e) {
@@ -55,16 +53,6 @@ document.addEventListener('mouseover', function(e) {
     }
 });
 
-// document.addEventListener('mouseover', function(e) {
-//     if (typeof(header) === 'undefined' || typeof(btnHide) === 'undefined' || typeof(btnShow) === 'undefined') {
-//         header = document.getElementsByClassName('header')[0];
-//         btnHide = document.getElementsByClassName('hide-header-btn')[0];
-//         btnShow = document.getElementsByClassName('show-header-btn')[0];
-//         btnHide.addEventListener('click', hideHeader);
-//         btnShow.addEventListener('click', showHeader);
-//     }
-// });
-
 document.addEventListener('scroll', function(e) {
     var map = document.getElementsByClassName('map-box')[0];
     var pos = map.getBoundingClientRect().top;
@@ -84,16 +72,3 @@ function hideHeader() {
     btnShow.style.visibility = 'visible';
     document.documentElement.scrollTop = 0;
 }
-
-
-
-
-
-
-
-// var btn;
-
-
-// function backToTop() {
-//     document.documentElement.scrollTop = 0;
-// }

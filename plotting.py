@@ -5,52 +5,8 @@ from dash import html, dcc
 from geo_df import GDF
 import folium as fl
 
-''' PATH ----------------------------------------------------------------- '''
-
 PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath("./data").resolve()
-
-
-'''
-USER INTERFACE ---------------------------------------------------------------
-------------------------------------------------------------------------------
-'''
-
-
-def gray(x):
-    return f"#f{x}f{x}f{x}"
-
-
-def code_btn(ID):
-    return dbc.Button(
-        [
-            html.I(className="bi bi-code-slash fa-2x"),
-            "CODE",
-        ],
-        id=ID,
-        className="me-1",
-        outline=True,
-        color="secondary",
-        n_clicks=0,
-        )
-
-def code_dropdown(code, btn_id, collapse_id):
-    return html.Div(
-            [
-                html.Div(html.Div(code_btn(btn_id)), className="code-btn"),
-                dbc.Collapse(
-                    dcc.Markdown(code, className='markdowns'),
-                    id=collapse_id,
-                    is_open=False,
-                ),
-            ], style={"width": "1000px"}
-        )
-
-
-'''
-DATA -------------------------------------------------------------------------
-------------------------------------------------------------------------------
-'''
 
 
 '''

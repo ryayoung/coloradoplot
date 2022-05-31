@@ -1,14 +1,10 @@
-
-# import plotly.express as px
-# import plotly.graph_objects as go
-# import plotly.figure_factory as ff
 from dash import Dash, html, dcc, Input, Output, State
 import dash_bootstrap_components as dbc
 import pandas as pd, numpy as np
 import matplotlib.pyplot as plt, seaborn as sns
 import pathlib
 
-from functions import *
+from plotting import *
 
 
 ''' APP ------------------------------------------------------------------ '''
@@ -25,10 +21,6 @@ app.scripts.config.serve_locally = True
 ''' MAIN APP ------------------------------------------------------------- '''
 
 def main():
-    """
-    - Radio button switch between county and school district
-    """
-
     app.layout = html.Div(className='layout', children=[
     # ------------------------------------------------------------------------
     html.Div(className='top-bar'),
@@ -198,8 +190,6 @@ def main():
         Input('agg-choices-radio', 'value'),
     )
     def agg_change(agg):
-        global CUR_AGG
-        CUR_AGG = agg
         if agg == 'County':
             return (VARS_ALL, BY_1_ALL, VARS_ALL, BY_2_ALL, YEARS_ALL, YEAR_ALL, False,
                     {'background-color': 'white'}, SWITCH_OPT_ALL, SWITCHES, MARK_SCALE, DETAILS_1_ALL)
@@ -263,8 +253,6 @@ YEAR_EDU = '2012'
 DETAILS_1_ALL = ['cr_count']
 DETAILS_1_EDU = ['pupil_total']
 
-CUR_AGG = AGG
-
 SWITCHES = ['show_by_2']
 SWITCH_OPT_ALL = [
     {"label": "Hide Variable 2", "value": 'hide_by_2'},
@@ -281,24 +269,12 @@ SWITCH_OPT_EDU = [
 
 MARK_SCALE = 5
 
-# agg_selection = 'County'
-# var_selection = 'cr_rate'
-# var_choices = VARS_ALL
-
-# for c in df_edu_dist.columns:
-    # print(c)
 
 ''' LOGIC ---------------------------------------------------------------- '''
 
 def update(agg, year, by_1, by_2, details_1, show_alt, show_alt_marks, reverse_cmap, mark_scale):
     mark_scale = mark_scale * 3
     year = int(year)
-
-    # if not by_2:
-    #     if agg == 'County':
-    #         by_2 = BY_2_ALL
-    #     else:
-    #         by_2 = BY_2_EDU
 
     m = plot(agg, df_all, df_edu_dist, year, by_1, by_2, details_1,
             show_alt=show_alt,
@@ -328,34 +304,3 @@ if __name__ == '__main__':
 else:
     main()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            # dbc.DropdownMenu(
-            #     children= [dbc.DropdownMenuItem(v) for v in VARS_ALL if v != var_selection],
-            #     label=var_selection,
-            #     id='var-choices-dropdown',
-            # ),
-                # html.Div(className='agg-choices', children=[
-                #     dcc.RadioItems(className='agg-choices-radio',
-                #         options=AGG_CHOICES,
-                #         value=AGG,
-                #         id='agg-choices-radio',
-                #         labelStyle={'marginLeft':'15px', 'marginRight':'15px', 'marginBottom':'5px'},
-                #         inputStyle={'marginRight': '7px'},
-                #     ),
-                # ],
-                # ),
