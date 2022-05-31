@@ -128,7 +128,7 @@ def plot_county(df, by_1, dist, year,
     
     if show_alt == True:
 
-        dist_map = dist.explore(style_kwds=dict(fill=False, color='#bababa', weight=4), zoom_start=ZOOM)
+        dist_map = dist.explore(location=LOCATION, style_kwds=dict(fill=False, color='#bababa', weight=4), zoom_start=ZOOM)
 
         result = main.explore(location=LOCATION, tooltip=['county']+[by_1]+details_1, column=main[by_1],
                     m=dist_map, cmap=cmap, **color_range,
