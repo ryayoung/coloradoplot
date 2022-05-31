@@ -61,7 +61,8 @@ PLOTTING ---------------------------------------------------------------------
 
 ''' HELPERS -------------------------------------------------------------- '''
 
-ZOOM=7
+ZOOM = 7
+LOCATION = [37.362701, -105.613936]
 
 def normalize(data, multiplier=None):
     result = (data - np.min(data)) / (np.max(data) - np.min(data))
@@ -129,11 +130,11 @@ def plot_county(df, by_1, dist, year,
 
         dist_map = dist.explore(style_kwds=dict(fill=False, color='#bababa', weight=4), zoom_start=ZOOM)
 
-        result = main.explore(tooltip=['county']+[by_1]+details_1, column=main[by_1],
+        result = main.explore(location=LOCATION, tooltip=['county']+[by_1]+details_1, column=main[by_1],
                     m=dist_map, cmap=cmap, **color_range,
                     style_kwds=style_kwds, highlight_kwds=highlight_kwds)
     else:
-        result = main.explore(tooltip=['county']+[by_1]+details_1, column=main[by_1],
+        result = main.explore(location=LOCATION, tooltip=['county']+[by_1]+details_1, column=main[by_1],
                     cmap=cmap, **color_range,
                     style_kwds=style_kwds, highlight_kwds=highlight_kwds, zoom_start=ZOOM)
     
@@ -171,11 +172,11 @@ def plot_edu_dist(df, by_1,
 
         county_map = county.explore(style_kwds=dict(fill=False, color='gray', weight=4), zoom_start=ZOOM)
 
-        result = main.explore(tooltip=['dist']+[by_1]+details_1, column=main[by_1],
+        result = main.explore(location=LOCATION, tooltip=['dist']+[by_1]+details_1, column=main[by_1],
                     m=county_map, cmap=cmap, vmin=0, vmax=100,
                     style_kwds=style_kwds, highlight_kwds=highlight_kwds)
     else:
-        result = main.explore(tooltip=['dist']+[by_1]+details_1, column=main[by_1],
+        result = main.explore(location=LOCATION, tooltip=['dist']+[by_1]+details_1, column=main[by_1],
                     cmap=cmap, vmin=0, vmax=100,
                     style_kwds=style_kwds, highlight_kwds=highlight_kwds, zoom_start=ZOOM)
     

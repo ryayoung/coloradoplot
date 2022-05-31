@@ -31,6 +31,7 @@ def main():
 
     app.layout = html.Div(className='layout', children=[
     # ------------------------------------------------------------------------
+    html.Div(className='top-bar'),
     html.Div(className='header', children=[
         html.Div(className='title', children=[
             dcc.Markdown("# Colorado Crime and Education"),
@@ -93,7 +94,7 @@ def main():
                 ),
                 html.Div(className='details', children=[
                     html.Div(className='details-1', children=[
-                        html.Label('Tooltip #1: Extra Variables', htmlFor='details-1-dropdown'),
+                        html.Label('Tooltip', htmlFor='details-1-dropdown'),
                         dcc.Dropdown(className='var-choices-dropdown',
                             options=VARS_ALL,
                             value=DETAILS_1_ALL,
@@ -105,7 +106,7 @@ def main():
                     ],
                     ),
                     html.Div(className='details-2', children=[
-                        html.Label('Tooltip #2: Extra Variables', htmlFor='details-2-dropdown'),
+                        html.Label('Tooltip', htmlFor='details-2-dropdown'),
                         dcc.Dropdown(className='var-choices-dropdown',
                             options=VARS_ALL,
                             value=[],
@@ -148,11 +149,10 @@ def main():
         ),
         html.Div(className='hide-header', children=[
             dbc.Button(className='me-1 hide-header-btn', children=[
-                # html.I(className='bi bi-chevron-up fa-2x', style={'marginRight':'7px', 'font-size':'1.3em'}),
                 html.I(className='bi bi-chevron-up fa-2x', style={'marginRight':'7px'}),
-                'Hide Options',
             ],
-            color='light',
+            color='secondary',
+            outline=True,
             id='hide-header-btn'
             ),
         ],
@@ -162,20 +162,21 @@ def main():
     html.Div(className='show-header', children=[
         dbc.Button(className='me-1 show-header-btn', children=[
             html.I(className='bi bi-chevron-down fa-2x', style={'marginRight':'7px'}),
-            'Show Options',
         ],
         color='primary',
+        outline=True,
         id='show-header-btn'
         ),
     ],
     ),
+    dcc.Loading(id="loading", children=[html.Div(id="loading-output")], type="default"),
     html.Div(className='map-box', children=[
         html.Iframe(className='map',
             id='map',
             srcDoc=None,
         ),
     ],
-    )
+    ),
     # ------------------------------------------------------------------------
     ])
 
@@ -190,6 +191,7 @@ def main():
             Output('year-dropdown', 'disabled'),
             Output('year-dropdown', 'style'),
             Output('switches-input', 'options'),
+            Output('switches-input', 'value'),
             Output('mark-scale-input', 'value'),
             Output('details-1-dropdown', 'value'),
         ],
@@ -200,14 +202,17 @@ def main():
         CUR_AGG = agg
         if agg == 'County':
             return (VARS_ALL, BY_1_ALL, VARS_ALL, BY_2_ALL, YEARS_ALL, YEAR_ALL, False,
-                    {'background-color': 'white'}, SWITCH_OPT_ALL, MARK_SCALE, DETAILS_1_ALL)
+                    {'background-color': 'white'}, SWITCH_OPT_ALL, SWITCHES, MARK_SCALE, DETAILS_1_ALL)
 
         return (VARS_EDU, BY_1_EDU, VARS_EDU, BY_2_EDU, YEARS_EDU, YEAR_EDU, True,
-                    {'background-color': '#e6e6e6'}, SWITCH_OPT_EDU, MARK_SCALE, DETAILS_1_EDU)
+                    {'background-color': '#e6e6e6'}, SWITCH_OPT_EDU, SWITCHES, MARK_SCALE, DETAILS_1_EDU)
     
 
     @app.callback(
-        Output('map', 'srcDoc'),
+        [
+            Output('map', 'srcDoc'),
+            Output('loading-output', 'children'),
+        ],
         [
             Input('agg-choices-radio', 'value'),
             Input('year-dropdown', 'value'),
@@ -219,14 +224,15 @@ def main():
         ],
     )
     def var_change(agg, year, by_1, by_2, switches, mark_scale, details_1):
-        show_by_2 = True if 'show_by_2' in switches else False
+        hide_by_2 = True if 'hide_by_2' in switches else False
         show_alt = True if 'show_alt' in switches else False
         show_alt_marks = True if 'show_alt_marks' in switches else False
         reverse_cmap = True if 'reverse_cmap' in switches else False
         
-        if show_by_2 == False: by_2 = None
+        if hide_by_2 == True:
+            by_2 = None
 
-        return update(agg, year, by_1, by_2, details_1, show_alt, show_alt_marks, reverse_cmap, mark_scale)
+        return update(agg, year, by_1, by_2, details_1, show_alt, show_alt_marks, reverse_cmap, mark_scale), []
 
 
 
@@ -261,13 +267,13 @@ CUR_AGG = AGG
 
 SWITCHES = ['show_by_2']
 SWITCH_OPT_ALL = [
-    {"label": "Show Variable #2", "value": 'show_by_2'},
+    {"label": "Hide Variable 2", "value": 'hide_by_2'},
     {"label": "District Locations", "value": 'show_alt_marks'},
     {"label": "District Borders", "value": 'show_alt'},
     {"label": "Reverse Color", "value": 'reverse_cmap'},
 ]
 SWITCH_OPT_EDU = [
-    {"label": "Show Variable #2", "value": 'show_by_2'},
+    {"label": "Hide Variable 2", "value": 'hide_by_2'},
     {"label": "County Locations", "value": 'show_alt_marks'},
     {"label": "County Borders", "value": 'show_alt'},
     {"label": "Reverse Color", "value": 'reverse_cmap'},
