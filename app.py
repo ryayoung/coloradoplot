@@ -6,9 +6,6 @@ import pathlib
 
 from plotting import *
 
-
-''' APP ------------------------------------------------------------------ '''
-
 app = Dash(__name__, suppress_callback_exceptions=True,
                 assets_ignore='.*chiddyp.*',
                 external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP],
@@ -18,7 +15,7 @@ app.css.config.serve_locally = True
 app.scripts.config.serve_locally = True
 
 
-''' MAIN APP ------------------------------------------------------------- '''
+''' APP ------------------------------------------------------------------ '''
 
 def main():
     app.layout = html.Div(className='layout', children=[
