@@ -40,7 +40,7 @@ body {
     flex-direction: column;
     row-gap: 20px;
     padding-top: 30px;
-    padding-bottom: 15px;
+    padding-bottom: 0px;
 }
 
 .main-controls {
@@ -151,26 +151,36 @@ body {
 .hide-header {
     min-width: 100% !important;
     margin-left: -40px;
+    height: 60px;
 }
 
-.hide-header .hov {
+.hide-header-btn .icon {
+    margin-bottom: -10px !important;
+    /* padding-bottom: -10px !important; */
+}
+/* .hide-header .hov {
     visibility: hidden;
 }
 .hide-header:hover .hov {
     visibility: visible;
-}
+} */
+
+
 
 .hide-header-btn {
     margin: 0;
+    padding-top: 30px;
     width: 100%;
+    height: 100%;
     border: none;
     font-size: 1.1em;
     -webkit-text-stroke: 1.5px;
-    border-bottom: 3px solid white;
+    border-bottom: 4px solid white;
     padding-bottom: 0;
 }
 
 .hide-header-btn:hover {
+    padding-top: 25px;
     -webkit-text-stroke: 2px;
     color: #0d6efd;
     background-color: white;
@@ -210,6 +220,12 @@ body {
     -webkit-text-stroke: 1.5px;
     border-top: 5px solid #0d6efd;
     padding-top: 0;
+}
+.show-header-btn:hover {
+    background: none;
+    color: #0d6efd;
+    border-top: 12px solid #0d6efd;
+
 }
 
 /* restyle radio items */

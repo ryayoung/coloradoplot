@@ -149,7 +149,7 @@ def main():
         ),
         html.Div(className='hide-header', children=[
             dbc.Button(className='me-1 hide-header-btn', children=[
-                html.I(className='bi bi-chevron-up fa-2x', style={'marginRight':'7px'}),
+                html.I(className='icon bi bi-chevron-up fa-2x', style={'marginRight':'7px'}),
             ],
             color='secondary',
             outline=True,
