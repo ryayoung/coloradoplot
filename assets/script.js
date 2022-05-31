@@ -50,8 +50,8 @@ document.addEventListener('mouseover', function(e) {
         header = document.getElementsByClassName('header')[0];
         btnHide = document.getElementsByClassName('hide-header-btn')[0];
         btnShow = document.getElementsByClassName('show-header-btn')[0];
-        btnHide.addEventListener('click', hideHeader);
-        btnShow.addEventListener('click', showHeader);
+        btnHide.addEventListener('mousedown', hideHeader);
+        btnShow.addEventListener('mousedown', showHeader);
     }
 });
 
