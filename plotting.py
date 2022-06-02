@@ -75,9 +75,9 @@ def plot_county(df, by_1, dist, year,
 
     main = GDF(df, geo='geo_county').df()
 
-    color_range = dict()
-    if (50 < main[by_1].max() < 101) and (0 < main[by_1].min() < 50):
-        color_range = dict(vmin=0, vmax=100)
+    # color_range = dict()
+    # if (50 < main[by_1].max() < 101) and (0 < main[by_1].min() < 50):
+        # color_range = dict(vmin=0, vmax=100)
 
     if show_alt == True or show_alt_marks == True:
         dist = GDF(dist, geo='geo_dist').df()
@@ -87,11 +87,11 @@ def plot_county(df, by_1, dist, year,
         dist_map = dist.explore(location=LOCATION, style_kwds=dict(fill=False, color='#bababa', weight=4), zoom_start=ZOOM)
 
         result = main.explore(location=LOCATION, tooltip=['county']+[by_1]+details_1, column=main[by_1],
-                    m=dist_map, cmap=cmap, **color_range,
+                    m=dist_map, cmap=cmap, # **color_range,
                     style_kwds=style_kwds, highlight_kwds=highlight_kwds)
     else:
         result = main.explore(location=LOCATION, tooltip=['county']+[by_1]+details_1, column=main[by_1],
-                    cmap=cmap, **color_range,
+                    cmap=cmap, # **color_range,
                     style_kwds=style_kwds, highlight_kwds=highlight_kwds, zoom_start=ZOOM)
     
     if show_alt_marks == True:
@@ -123,17 +123,21 @@ def plot_edu_dist(df, by_1,
 
     main = GDF(df, geo='geo_dist').df()
 
+    # color_range = dict()
+    # if (50 < main[by_1].max() < 101) and (0 < main[by_1].min() < 50):
+        # color_range = dict(vmin=0, vmax=100)
+
     if show_county == True:
         county = GDF(df, geo='geo_county').df()
 
         county_map = county.explore(style_kwds=dict(fill=False, color='gray', weight=4), zoom_start=ZOOM)
 
         result = main.explore(location=LOCATION, tooltip=['dist']+[by_1]+details_1, column=main[by_1],
-                    m=county_map, cmap=cmap, vmin=0, vmax=100,
+                    m=county_map, cmap=cmap, # **color_range,
                     style_kwds=style_kwds, highlight_kwds=highlight_kwds)
     else:
         result = main.explore(location=LOCATION, tooltip=['dist']+[by_1]+details_1, column=main[by_1],
-                    cmap=cmap, vmin=0, vmax=100,
+                    cmap=cmap, # **color_range,
                     style_kwds=style_kwds, highlight_kwds=highlight_kwds, zoom_start=ZOOM)
     
     if by_2:

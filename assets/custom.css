@@ -1,13 +1,171 @@
 html {
-    /* height: 100% !important; */
+    /* max-height: 100%; */
 }
 body {
-    /* height: 100% !important; */
+    /* max-height: 100%; */
     /* padding-top: 25px; */
     /* padding-left: 100px; */
 }
 .layout {
-    /* height: 100% !important; */
+    height: 100vh !important;
+}
+
+.title-text {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 20px;
+    font-weight: 200;
+    margin-bottom: 15px;
+}
+
+/* .Select-menu, .Select-menu-outer { */
+    /* max-height: 500px; */
+/* } */
+
+td:hover {
+    background-color: #f8f8f8 !important;
+    cursor: pointer;
+}
+
+
+.page-contents {
+    height: 100%;
+    display: flex;
+    /* align-items: stretch; */
+    
+}
+
+.sidebar {
+    margin-top: 4px;
+    display: block;
+    /* min-height: 100%; */
+    max-height: 100vh;
+    /* min-width: 300px; */
+    width: 280px;
+    min-width: 280px;
+    background-color: white;
+    border-right: 1px solid #dee2e6;
+    overflow: scroll;
+}
+
+.sidebar-handle {
+    position: absolute;
+    top: 0;
+    left: 280px;
+    display: flex;
+    height: 100%;
+    width: 0px;
+    background-color: none;
+    justify-content: center;
+}
+
+.sidebar-handle-line-outer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 15px;
+    background-color: none;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    cursor: ew-resize;
+    margin-top: 2px;
+}
+
+
+.sidebar-handle-line-inner {
+    height: 100%;
+    width: 1px;
+    background-color: #dee2e6;
+}
+
+.sidebar-handle-line-outer:hover .sidebar-handle-line-inner {
+    background-color: #0d6efd;
+    width: 3px;
+}
+
+.agg-choices {
+    /* width: 100% !important; */
+    width: 100%;
+    display: flex;
+    /* flex-direction: column; */
+    /* row-gap: 10px; */
+    /* align-content: space-between; */
+    white-space: nowrap;
+    justify-content: center;
+    /* align-content: space-between; */
+}
+.agg-choices .r-group {
+    width: 100%;
+    margin-left: 20px;
+    margin-top: 20px;
+    display: flex;
+    /* justify-content: center !important; */
+}
+.agg-choices-radio {
+    /* align-self: center; */
+    /* width: 100%; */
+    /* padding-left: 20px !important; */
+}
+
+
+.sidebar .header-label {
+    font-size: 1.1em;
+    /* color: #757575; */
+    margin-top: 30px;
+    width: 100%;
+    padding-left: 20px;
+    font-weight: bold;
+    /* text-align: center; */
+    /* border-bottom: 1px solid #dee2e6; */
+}
+
+.agg-choices label {
+    /* font-size: 0.9em; */
+}
+
+.var-tabs {
+    /* height: 500px; */
+    margin-top: 20px;
+}
+
+.selection-display {
+    display: inline-flex;
+    width: 100%;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.selection-display-label {
+    color: #757575;
+
+}
+
+.selection-display-value {
+    margin: 15px 0px 8px 20px;
+    /* -webkit-text-stroke: .45px; */
+    color: #757575;
+}
+
+#var-1-table {
+    /* height: 90% !important; */
+    /* max-height: 80vh; */
+    /* overflow: scroll; */
+    /* display: none; */
+}
+
+#var-2-table {
+    max-height: 100vh;
+    /* display: none; */
+}
+
+.dash-table-tooltip {
+    /* margin-left: 300px; */
+}
+
+.main-content {
+    width: 100%;
+    /* max-width: 100%; */
 }
 
 .top-bar {
@@ -24,7 +182,7 @@ body {
     /* height: 300px; */
     margin: 0;
     padding: 0;
-    padding-top: 25px;
+    padding-top: 20px;
     padding-left: 40px;
     /* padding-bottom: 25px; */
 }
@@ -39,7 +197,7 @@ body {
     display: flex;
     flex-direction: column;
     row-gap: 20px;
-    padding-top: 30px;
+    /* padding-top: 15px; */
     padding-bottom: 0px;
 }
 
@@ -90,6 +248,18 @@ body {
     color: #757575;
 }
 
+.switches-input {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 10px;
+    max-height: 100px;
+    width: 400px;
+}
+
+.switches-input .form-check {
+    width: 180px;
+}
+
 .switches label {
     font-size: 1em;
     color: black;
@@ -103,9 +273,22 @@ body {
 
 }
 
-.var-1-dropdown {
-    
-}
+/* .Select-menu { */
+    /* max-height: 500px; */
+/* } */
+
+/* .VirtualSelectGrid { */
+  /* z-index: 1; */
+  /* min-height: 500px !important; */
+  /* overflow: visible; */
+/* } */
+
+/* .var-choices-dropdown { */
+    /* max-height: 500px; */
+/* } */
+/* #var-1-dropdown { */
+    /* max-height: 500px; */
+/* } */
 
 .var-2 {
 
@@ -143,19 +326,17 @@ body {
     border-bottom: 2px solid #0d6efd !important;
 }
 
-.agg-choices {
-    width: 100%;
-}
 
 
 .hide-header {
     min-width: 100% !important;
     margin-left: -40px;
-    height: 60px;
+    /* height: 29px; */
+    height: 15px;
 }
 
 .hide-header-btn .icon {
-    margin-bottom: -10px !important;
+    /* margin-bottom: -8px !important; */
     /* padding-bottom: -10px !important; */
 }
 /* .hide-header .hov {
@@ -171,20 +352,23 @@ button:focus {
 
 
 .hide-header-btn {
+    display: block;
     margin: 0;
-    padding-top: 30px;
+    padding: 0;
+    /* padding-top: 0; */
+    /* padding-bottom: 0; */
+    /* padding-top: 30px; */
     width: 100%;
     height: 100%;
     border: none;
     font-size: 1.1em;
-    -webkit-text-stroke: 1.5px;
-    border-bottom: 1px solid #6c757d;
+    /* -webkit-text-stroke: 1.5px; */
+    border-bottom: 2px solid #dee2e6;
     /* border-bottom: 4px solid white; */
-    padding-bottom: 0;
 }
 
 .hide-header-btn:hover {
-    padding-top: 25px;
+    /* padding-top: 25px; */
     -webkit-text-stroke: 2px;
     color: #0d6efd;
     background-color: white;
@@ -199,7 +383,8 @@ button:focus {
 
 .map-box {
     width: 100%;
-    height: 1000px;
+    height: 100%;
+    /* height: 1000px; */
 }
 
 .map {
@@ -211,25 +396,28 @@ button:focus {
 .show-header {
     position: fixed;
     top: 0;
-    min-width: 100% !important;
+    /* left: 0; */
+    width: 100%;
+    max-width: 100%;
     padding-left: 0;
     margin: 0;
     visibility: hidden;
 }
 
 .show-header-btn {
+    min-width: 100%;
     margin: 0;
     width: 100%;
     border: none;
     font-size: 1.1em;
     -webkit-text-stroke: 1.5px;
-    border-top: 5px solid #0d6efd;
+    border-top: 3px solid #0d6efd;
     padding-top: 0;
 }
 .show-header-btn:hover {
     background: none;
     color: #0d6efd;
-    border-top: 12px solid #0d6efd;
+    border-top: 6px solid #0d6efd;
 
 }
 
