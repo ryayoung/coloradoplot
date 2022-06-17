@@ -3,4 +3,5 @@ env
 .DS_Store
 .env
 **/.ipynb
+**/.ipynb_checkpoints
 **/.xlsx

@@ -1,11 +1,3 @@
-html {
-    /* max-height: 100%; */
-}
-body {
-    /* max-height: 100%; */
-    /* padding-top: 25px; */
-    /* padding-left: 100px; */
-}
 .layout {
     height: 100vh !important;
 }
@@ -18,29 +10,20 @@ body {
     margin-bottom: 15px;
 }
 
-/* .Select-menu, .Select-menu-outer { */
-    /* max-height: 500px; */
-/* } */
-
 td:hover {
     background-color: #f8f8f8 !important;
     cursor: pointer;
 }
 
-
 .page-contents {
     height: 100%;
     display: flex;
-    /* align-items: stretch; */
-    
 }
 
 .sidebar {
     margin-top: 4px;
     display: block;
-    /* min-height: 100%; */
     max-height: 100vh;
-    /* min-width: 300px; */
     width: 280px;
     min-width: 280px;
     background-color: white;
@@ -86,48 +69,29 @@ td:hover {
 }
 
 .agg-choices {
-    /* width: 100% !important; */
     width: 100%;
     display: flex;
-    /* flex-direction: column; */
-    /* row-gap: 10px; */
-    /* align-content: space-between; */
     white-space: nowrap;
     justify-content: center;
-    /* align-content: space-between; */
 }
 .agg-choices .r-group {
     width: 100%;
     margin-left: 20px;
     margin-top: 20px;
     display: flex;
-    /* justify-content: center !important; */
-}
-.agg-choices-radio {
-    /* align-self: center; */
-    /* width: 100%; */
-    /* padding-left: 20px !important; */
 }
 
 
 .sidebar .header-label {
     font-size: 1.1em;
-    /* color: #757575; */
     margin-top: 30px;
     width: 100%;
     padding-left: 20px;
     font-weight: bold;
-    /* text-align: center; */
-    /* border-bottom: 1px solid #dee2e6; */
-}
-
-.agg-choices label {
-    /* font-size: 0.9em; */
 }
 
 .var-tabs {
-    /* height: 500px; */
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 .selection-display {
@@ -143,29 +107,15 @@ td:hover {
 
 .selection-display-value {
     margin: 15px 0px 8px 20px;
-    /* -webkit-text-stroke: .45px; */
     color: #757575;
-}
-
-#var-1-table {
-    /* height: 90% !important; */
-    /* max-height: 80vh; */
-    /* overflow: scroll; */
-    /* display: none; */
 }
 
 #var-2-table {
     max-height: 100vh;
-    /* display: none; */
-}
-
-.dash-table-tooltip {
-    /* margin-left: 300px; */
 }
 
 .main-content {
     width: 100%;
-    /* max-width: 100%; */
 }
 
 .top-bar {
@@ -173,18 +123,15 @@ td:hover {
     top: 0;
     width: 100%;
     height: 2px;
-    /* background-color: #dc3545; */
     background-color: #0d6efd;
 }
 
 .header {
     width: 100%;
-    /* height: 300px; */
     margin: 0;
     padding: 0;
-    padding-top: 20px;
+    padding-top: 10px;
     padding-left: 40px;
-    /* padding-bottom: 25px; */
 }
 
 .title {
@@ -194,10 +141,10 @@ td:hover {
 
 .main-controls-box {
     width: 100%;
+    max-width: 700px;
     display: flex;
     flex-direction: column;
-    row-gap: 20px;
-    /* padding-top: 15px; */
+    row-gap: 10px;
     padding-bottom: 0px;
 }
 
@@ -206,41 +153,30 @@ td:hover {
     align-self: center;
     display: inline-flex;
     column-gap: 40px;
-    /* padding-left: 60px; */
 }
 
 .variables {
     width: 210px;
     display: flex;
-    /* flex-wrap: wrap; */
     flex-direction: column;
     row-gap: 10px;
-    /* margin-right: 40px; */
     align-content: space-between;
-}
-
-.details {
-    margin-left: -20px;
 }
 
 .agg-year {
     width: 210px;
     display: flex;
-    /* flex-wrap: wrap; */
     flex-direction: column;
     row-gap: 10px;
-    /* margin-right: 40px; */
     align-content: space-between;
 }
 
 .details {
-    width: 210px;
     display: flex;
-    /* flex-wrap: wrap; */
     flex-direction: column;
     row-gap: 10px;
-    /* margin-right: 40px; */
     align-content: space-between;
+    padding-right: 40px;
 }
 
 .main-controls label {
@@ -248,16 +184,12 @@ td:hover {
     color: #757575;
 }
 
-.switches-input {
-    display: flex;
-    flex-wrap: wrap;
-    column-gap: 10px;
-    max-height: 100px;
-    width: 400px;
-}
 
-.switches-input .form-check {
-    width: 180px;
+
+.switches-input {
+    display: inline-flex;
+    column-gap: 30px;
+    max-height: 100px;
 }
 
 .switches label {
@@ -265,43 +197,19 @@ td:hover {
     color: black;
 }
 
-.switches .form-check.form-switch {
-    margin-bottom: 10px;
+.form-check.form-switch {
+    font-size: 0.9em;
 }
-
-.var-1 {
-
-}
-
-/* .Select-menu { */
-    /* max-height: 500px; */
-/* } */
-
-/* .VirtualSelectGrid { */
-  /* z-index: 1; */
-  /* min-height: 500px !important; */
-  /* overflow: visible; */
-/* } */
-
-/* .var-choices-dropdown { */
-    /* max-height: 500px; */
-/* } */
-/* #var-1-dropdown { */
-    /* max-height: 500px; */
-/* } */
-
-.var-2 {
-
-}
-
-.var-2-dropdown {
-    
-}
-
 
 .year {
     width: 100px;
     display: block;
+    margin-left: 20px;
+    margin-top: 30px;
+}
+.year label {
+    font-size: 0.9em;
+    color: #757575;
 }
 
 .year-dropdown {
@@ -313,10 +221,10 @@ td:hover {
 }
 
 .mark-scale {
-    width: 90px;
+    width: 100px;
 }
 .mark-scale-input {
-    width: 100%;
+    width: 100px;
     height: 35px;
     border: none;
     border-bottom: 2px solid #c6c6c6;
@@ -326,25 +234,11 @@ td:hover {
     border-bottom: 2px solid #0d6efd !important;
 }
 
-
-
 .hide-header {
     min-width: 100% !important;
     margin-left: -40px;
-    /* height: 29px; */
     height: 15px;
 }
-
-.hide-header-btn .icon {
-    /* margin-bottom: -8px !important; */
-    /* padding-bottom: -10px !important; */
-}
-/* .hide-header .hov {
-    visibility: hidden;
-}
-.hide-header:hover .hov {
-    visibility: visible;
-} */
 
 button:focus {
     box-shadow: none !important;
@@ -355,36 +249,28 @@ button:focus {
     display: block;
     margin: 0;
     padding: 0;
-    /* padding-top: 0; */
-    /* padding-bottom: 0; */
-    /* padding-top: 30px; */
     width: 100%;
     height: 100%;
     border: none;
     font-size: 1.1em;
-    /* -webkit-text-stroke: 1.5px; */
     border-bottom: 2px solid #dee2e6;
-    /* border-bottom: 4px solid white; */
 }
 
 .hide-header-btn:hover {
-    /* padding-top: 25px; */
     -webkit-text-stroke: 2px;
     color: #0d6efd;
     background-color: white;
-    /* border-bottom-color: #0d6efd; */
     border-bottom: 3px solid #0d6efd;
 }
 
 .details-1 {
-    width: 200px;
+    width: 100%;
 }
 
 
 .map-box {
     width: 100%;
     height: 100%;
-    /* height: 1000px; */
 }
 
 .map {
@@ -392,11 +278,9 @@ button:focus {
     height: 100%;
 }
 
-
 .show-header {
     position: fixed;
     top: 0;
-    /* left: 0; */
     width: 100%;
     max-width: 100%;
     padding-left: 0;
@@ -421,7 +305,6 @@ button:focus {
 
 }
 
-/* restyle radio items */
 .radio-group .form-check {
     padding-left: 0;
 }
@@ -436,95 +319,3 @@ button:focus {
     border-bottom-left-radius: 0;
     margin-left: -1px;
 }
-
-
-
-/* ------------------------------------------------------------------------ */
-/* ------------------------------------------------------------------------ */
-/* ------------------------------------------------------------------------ */
-.markdowns {
-    width: 950px;
-    margin-left: 50px;
-}
-.markdowns code {
-    background: #fafafa;/* #FFFFFF; */
-    border-radius: 10px;
-}
-.code-btn button {
-    font-size: 13px !important;
-    display: inline-flex !important;
-    align-items: center;
-}
-.code-btn button i {
-    font-size: 18px !important;
-    margin-right: 10px !important;
-}
-
-.code-btn button:focus {
-    /* outline:0 !important; */
-    box-shadow: none !important;
-}
-
-.code-btn {
-    margin-left: 50px;
-    /* width: 100%; */
-    /* text-align: right !important; */
-    /* float: right !important; */
-}
-.code-btn button {
-    border: none !important;
-}
-
-.pair-plot {
-    columns: 2;
-    width: 1130px;
-}
-
-.pair-plot .markdowns, .code-btn {
-    margin-left: 23px;
-}
-.pair-plot .markdowns {
-    width: 500px;
-    max-height: 150px;
-}
-/* .pair-plot .plot-container, .js-plotly-plot {
-    width: 100px !important;
-} */
-
-.accordion-button {
-    background-color: white !important;
-    color: black !important;
-}
-.accordion-button:focus {
-    box-shadow: none !important;
-}
-
-.accordion-markdown code {
-    background: #fafafa;
-    border-radius: 10px;
-    width: 100%;
-}
-
-
-
-
-
-
-
-
-
-/* .dropdown-menu.show {
-    max-height: 600px !important;
-    overflow: scroll !important;
-} */
-
-/* .dropdown-toggle.btn.btn-primary {
-    width: none;
-    min-width: 100px !important;
-    max-width: 300px !important;
-    text-align: left !important;
-}
-
-.dropdown-toggle.btn.btn-primary ::after {
-    float: right;
-} */

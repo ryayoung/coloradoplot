@@ -1,3 +1,4 @@
+import time
 import pathlib
 import pandas as pd, numpy as np
 import dash_bootstrap_components as dbc
@@ -7,6 +8,27 @@ import folium as fl
 
 PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath("./data").resolve()
+
+META = {
+    'county': dict(
+        df = pd.read_csv(DATA_PATH.joinpath('county.csv')),
+        name = 'County',
+        default_year = '2019',
+        default_1 = 'Crime - Average age',
+        default_2 = 'Crime Rate (per 100,000 people)',
+        tooltip = ['Crime Count'],
+        idx = ['year', 'county', 'geo_county_point', 'geo_county'],
+    ),
+    'dist': dict(
+        df = pd.read_csv(DATA_PATH.joinpath('dist.csv')),
+        name = 'School District',
+        default_year = '2012',
+        default_1 = 'Rate: Edu: Mobile',
+        default_2 = 'Edu: Poor - Graduated',
+        tooltip = ['Edu: Pupil total'],
+        idx = ['county', 'dist', 'geo_county_point', 'geo_dist_point', 'geo_county', 'geo_dist'],
+    ),
+}
 
 
 '''
@@ -27,8 +49,8 @@ def normalize(data, multiplier=None):
     return result
 
 
-def add_points(m, df, loc, val, scale=10):
-    for geo, v, v_norm in zip(df[loc], df[val], normalize(list(df[val]), scale)):
+def add_points(m, gdf, loc, val, scale=10):
+    for geo, v, v_norm in zip(gdf[loc], gdf[val], normalize(list(gdf[val]), scale)):
         fl.CircleMarker(
             location=(geo.y, geo.x),
             radius=v_norm,
@@ -39,10 +61,11 @@ def add_points(m, df, loc, val, scale=10):
     return m
 
 
-def add_marks(m, df, loc, var_name, tooltip_title=None):
+def add_marks(m, gdf, loc, var_name, tooltip_title=None):
     if not tooltip_title:
         tooltip_title = var_name
-    for geo, name in zip(df[loc], df[var_name]):
+    for geo, name in zip(gdf[loc], gdf[var_name]):
+        print(geo)
         fl.Marker(
             location=(geo.y, geo.x),
             icon=fl.Icon(color="gray", icon="info-sign"),
@@ -55,105 +78,99 @@ def add_marks(m, df, loc, var_name, tooltip_title=None):
 ''' GENERATE PLOTS ------------------------------------------------------- '''
 
 
-def plot_county(df, by_1, dist, year,
-        by_2,
-        details_1,
-        mark_scale,
-        show_alt,
-        show_alt_marks,
-        reverse_cmap,
+def plot(
+        year : str,
+        by_1 : str or None,
+        by_2 : str or None,
+        agg_str         : str   = META[list(META.keys())[0]]['name'],
+        tooltip_xtra    : list  = [],
+        mark_scale      : float = 15,
+        show_alt_borders: bool  = False,
+        show_alt_pins   : bool  = False,
+        reverse_cmap    : bool  = True,
     ):
 
-    cmap='flare'
-    style_kwds=dict( fillOpacity=0.5, weight=2 )
-    highlight_kwds=dict( fillOpacity=0.8 )
+    mark_scale *= 3
+    year = int(year)
 
-    df = df[df.year == year]
+    style_kwds = dict(
+        fillOpacity=0.5,
+        weight=2
+    )
+    style_kwds_border = dict(
+        fill=False,
+        color='#bababa',
+        weight=4
+    )
+    highlight_kwds = dict(
+        fillOpacity=0.8
+    )
 
-    if reverse_cmap == True:
-        cmap = f'{cmap}_r'
 
-    main = GDF(df, geo='geo_county').df()
+    cmap= 'flare' if not reverse_cmap else 'flare_r'
 
-    # color_range = dict()
-    # if (50 < main[by_1].max() < 101) and (0 < main[by_1].min() < 50):
-        # color_range = dict(vmin=0, vmax=100)
-
-    if show_alt == True or show_alt_marks == True:
-        dist = GDF(dist, geo='geo_dist').df()
-    
-    if show_alt == True:
-
-        dist_map = dist.explore(location=LOCATION, style_kwds=dict(fill=False, color='#bababa', weight=4), zoom_start=ZOOM)
-
-        result = main.explore(location=LOCATION, tooltip=['county']+[by_1]+details_1, column=main[by_1],
-                    m=dist_map, cmap=cmap, # **color_range,
-                    style_kwds=style_kwds, highlight_kwds=highlight_kwds)
+    # Convert string agg to tuple
+    if agg_str == 'County':
+        agg = ('county', 'dist')
     else:
-        result = main.explore(location=LOCATION, tooltip=['county']+[by_1]+details_1, column=main[by_1],
-                    cmap=cmap, # **color_range,
-                    style_kwds=style_kwds, highlight_kwds=highlight_kwds, zoom_start=ZOOM)
+        agg = ('dist', 'county')
+
+    df_1 = META[agg[0]]['df']
+    gdf_1 = GDF(df_1[df_1.year == year], geo=f'geo_{agg[0]}').df()
+
+    if show_alt_borders or show_alt_pins:
+        df_2 = META[agg[1]]['df']
+        year_2 = int(META[agg[1]]['default_year'])
+        gdf_2 = GDF(df_2[df_2.year == year_2], geo=f'geo_{agg[1]}').df()
+    else:
+        gdf_2 = None
+
+    if by_1:
+        tooltip = [agg[0]] + tooltip_xtra + [by_1]
+        column = gdf_1[by_1]
+    else:
+        column = None
+        tooltip = [agg[0]] + tooltip_xtra
+
+    if show_alt_borders:
+        alt_borders = gdf_2.explore(
+            location=LOCATION,
+            style_kwds=style_kwds_border,
+            zoom_start=ZOOM
+        )
+    else:
+        alt_borders = None
+                
+
+    result = gdf_1.explore(
+        location=LOCATION,
+        tooltip=tooltip,
+        column=column,
+        m=alt_borders,
+        cmap=cmap,
+        zoom_start=ZOOM,
+        style_kwds=style_kwds,
+        highlight_kwds=highlight_kwds
+    )
     
-    if show_alt_marks == True:
-        result = add_marks(result, dist, 'geo_dist_point', 'dist', 'School District')
+    if show_alt_pins == True:
+        result = add_marks(
+            m=result,
+            gdf=gdf_2,
+            loc=f'geo_{agg[1]}_point',
+            var_name=agg[1],
+            tooltip_title=META[agg[1]]['name'],
+        )
     
     if by_2:
-        result = add_points(result, main, 'geo_county_point', by_2, mark_scale)
+        result = add_points(
+            m=result,
+            gdf=gdf_1,
+            loc=f'geo_{agg[0]}_point',
+            val=by_2,
+            scale=mark_scale,
+        )
 
-    return result
-
-
-
-def plot_edu_dist(df, by_1,
-        by_2,
-        details_1,
-        mark_scale,
-        show_county,
-        show_county_marks,
-        reverse_cmap,
-    ):
-
-    cmap='flare'
-    style_kwds=dict( fillOpacity=0.5, weight=2 )
-    highlight_kwds=dict( fillOpacity=0.8 )
-
-
-    if reverse_cmap == True:
-        cmap = f'{cmap}_r'
-
-    main = GDF(df, geo='geo_dist').df()
-
-    # color_range = dict()
-    # if (50 < main[by_1].max() < 101) and (0 < main[by_1].min() < 50):
-        # color_range = dict(vmin=0, vmax=100)
-
-    if show_county == True:
-        county = GDF(df, geo='geo_county').df()
-
-        county_map = county.explore(style_kwds=dict(fill=False, color='gray', weight=4), zoom_start=ZOOM)
-
-        result = main.explore(location=LOCATION, tooltip=['dist']+[by_1]+details_1, column=main[by_1],
-                    m=county_map, cmap=cmap, # **color_range,
-                    style_kwds=style_kwds, highlight_kwds=highlight_kwds)
-    else:
-        result = main.explore(location=LOCATION, tooltip=['dist']+[by_1]+details_1, column=main[by_1],
-                    cmap=cmap, # **color_range,
-                    style_kwds=style_kwds, highlight_kwds=highlight_kwds, zoom_start=ZOOM)
-    
-    if by_2:
-        result = add_points(result, main, 'geo_dist_point', by_2, mark_scale)
-    return result
-
-
-
-def plot(agg, df_all, df_edu, year, by_1, by_2,
-        details_1:list      =[],
-        mark_scale:float   =15,
-        show_alt:bool      =False,
-        show_alt_marks:bool=False,
-        reverse_cmap:bool   =True,
-    ):
-    if agg == 'County':
-        return plot_county(df_all, by_1, df_edu, year, by_2, details_1, mark_scale, show_alt, show_alt_marks, reverse_cmap)
-    
-    return plot_edu_dist(df_edu, by_1, by_2, details_1, mark_scale, show_alt, show_alt_marks, reverse_cmap)
+    # result.save(DATA_PATH.joinpath('map.html'))
+    # the_map = open(DATA_PATH.joinpath('map.html'), 'r').read()
+    return result.get_root().render()
