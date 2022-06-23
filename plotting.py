@@ -1,4 +1,5 @@
 import time
+import math
 import pathlib
 import pandas as pd, numpy as np
 import dash_bootstrap_components as dbc
@@ -16,7 +17,8 @@ META = {
         default_year = '2019',
         default_1 = 'Crime - Average age',
         default_2 = 'Crime Rate (per 100,000 people)',
-        tooltip = ['Crime Count'],
+        tooltip_1 = ['Crime Count'],
+        tooltip_2 = ['% Housing units occupied'],
         idx = ['year', 'county', 'geo_county_point', 'geo_county'],
     ),
     'dist': dict(
@@ -24,9 +26,10 @@ META = {
         name = 'School District',
         default_year = '2012',
         default_1 = 'Rate: Edu: Mobile',
-        default_2 = 'Edu: Poor - Graduated',
-        tooltip = ['Edu: Pupil total'],
-        idx = ['county', 'dist', 'geo_county_point', 'geo_dist_point', 'geo_county', 'geo_dist'],
+        default_2 = 'Rate: Edu: Poor - Graduated',
+        tooltip_1 = ['Edu: Pupil total'],
+        tooltip_2 = ['Rate: Edu: Disabled - Stable'],
+        idx = ['year', 'county', 'dist', 'geo_county_point', 'geo_dist_point', 'geo_county', 'geo_dist'],
     ),
 }
 
@@ -42,21 +45,71 @@ PLOTTING ---------------------------------------------------------------------
 ZOOM = 7
 LOCATION = [37.362701, -105.613936]
 
-def normalize(data, multiplier=None):
+def normalize(data):
     result = (data - np.min(data)) / (np.max(data) - np.min(data))
-    if multiplier:
-        result = [v*multiplier for v in result]
     return result
 
 
-def add_points(m, gdf, loc, val, scale=10):
-    for geo, v, v_norm in zip(gdf[loc], gdf[val], normalize(list(gdf[val]), scale)):
+def lower_peak(y, coef):
+    '''
+    Make maximums smaller while keeping smaller values similar
+    Pass an int, 1-10
+    '''
+    if coef != 0:
+        y = y + 1
+        m = (coef ** 2) / 10
+        y = np.ma.log(y) / np.log(math.e - 0.7 + m)
+        y = y.filled(0)
+        y -= 1
+        y += 1 - np.max(y)
+    return y
+
+
+def straighten(y, coef):
+    if coef != 0:
+        y_straight = np.linspace(0, 1, len(y))
+        dist = y_straight - y
+        coef = 12 - coef
+        dist2 = (dist + 1) ** 1.1 - 1
+        y = y + dist2 / (coef * 0.6)
+    return y
+
+
+def adjust(y, coef_straighten, coef_lower_peak, scale):
+    scale *= 3
+    y = np.array(y)
+    order = np.argsort(y, kind='mergesort')
+    reverse = np.argsort(order, kind='mergesort')
+
+    y = y[order]
+    yn = normalize(y)
+
+    y1 = straighten(yn, coef_straighten)
+    y2 = lower_peak(y1, coef_lower_peak)
+
+    y2 = y2[reverse]
+    y2 *= scale
+    y2 = np.where(y2 == 0, 0.0001, y2)
+    return y2
+
+
+def add_points(m, gdf, loc, val, tooltip_xtra,
+        coef_straighten, coef_lower_peak, scale, color):
+    for geo, v, v_norm, *xtra in zip(
+                gdf[loc],
+                gdf[val],
+                adjust(gdf[val], coef_straighten, coef_lower_peak, scale),
+                *[gdf[x] for x in tooltip_xtra]
+        ):
         fl.CircleMarker(
             location=(geo.y, geo.x),
             radius=v_norm,
-            color='white',
+            color=color,
             fill=True,
-            tooltip=f'{val}: {v}'
+            tooltip=''.join(
+                [f'<b>{val}</b>: {v}<br>'] \
+                + [f'<b>{tooltip_xtra[i]}</b>: {xtra[i]}<br>' for i in range(0, len(tooltip_xtra))]
+            )
         ).add_to(m)
     return m
 
@@ -65,7 +118,6 @@ def add_marks(m, gdf, loc, var_name, tooltip_title=None):
     if not tooltip_title:
         tooltip_title = var_name
     for geo, name in zip(gdf[loc], gdf[var_name]):
-        print(geo)
         fl.Marker(
             location=(geo.y, geo.x),
             icon=fl.Icon(color="gray", icon="info-sign"),
@@ -79,18 +131,20 @@ def add_marks(m, gdf, loc, var_name, tooltip_title=None):
 
 
 def plot(
-        year : str,
-        by_1 : str or None,
-        by_2 : str or None,
         agg_str         : str   = META[list(META.keys())[0]]['name'],
-        tooltip_xtra    : list  = [],
-        mark_scale      : float = 15,
+        year            : str   = 2019,
+        by_1            : str   = None,
+        by_2            : str   = None,
+        by_1_tooltip_xtra: list = [],
+        by_2_tooltip_xtra: list = ['Crime - Against property', 'Crime - Against society'],
+        mark_straighten : float = 0,
+        mark_lower_peak : float = 2,
+        mark_scale      : float = 6,
         show_alt_borders: bool  = False,
         show_alt_pins   : bool  = False,
         reverse_cmap    : bool  = True,
     ):
 
-    mark_scale *= 3
     year = int(year)
 
     style_kwds = dict(
@@ -126,11 +180,13 @@ def plot(
         gdf_2 = None
 
     if by_1:
-        tooltip = [agg[0]] + tooltip_xtra + [by_1]
+        tooltip = [agg[0]] + by_1_tooltip_xtra + [by_1]
         column = gdf_1[by_1]
+        by_2_color = 'white'
     else:
         column = None
-        tooltip = [agg[0]] + tooltip_xtra
+        tooltip = [agg[0]] + by_1_tooltip_xtra
+        by_2_color = '#0d6efd'
 
     if show_alt_borders:
         alt_borders = gdf_2.explore(
@@ -142,6 +198,11 @@ def plot(
         alt_borders = None
                 
 
+    if by_1 == None:
+        kwargs = dict(color='white')
+    else:
+        kwargs = dict()
+
     result = gdf_1.explore(
         location=LOCATION,
         tooltip=tooltip,
@@ -150,7 +211,8 @@ def plot(
         cmap=cmap,
         zoom_start=ZOOM,
         style_kwds=style_kwds,
-        highlight_kwds=highlight_kwds
+        highlight_kwds=highlight_kwds,
+        **kwargs
     )
     
     if show_alt_pins == True:
@@ -168,7 +230,11 @@ def plot(
             gdf=gdf_1,
             loc=f'geo_{agg[0]}_point',
             val=by_2,
+            tooltip_xtra=by_2_tooltip_xtra,
+            coef_straighten=mark_straighten,
+            coef_lower_peak=mark_lower_peak,
             scale=mark_scale,
+            color=by_2_color,
         )
 
     # result.save(DATA_PATH.joinpath('map.html'))

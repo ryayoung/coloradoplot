@@ -1,10 +1,13 @@
 from dash import Dash, html, dcc, Input, Output, State, dash_table
+import dash_daq as daq
 from dash.development.base_component import Component
 import dash_bootstrap_components as dbc
 import pandas as pd, numpy as np
 import matplotlib.pyplot as plt, seaborn as sns
 import pathlib
+import re
 
+from boolean_switch import BooleanSwitch
 from plotting import *
 
 app = Dash(__name__, suppress_callback_exceptions=True,
@@ -24,8 +27,7 @@ def main():
     html.Div(className='top-bar'),
     html.Div(className='page-contents', children=[
     html.Div(className='sidebar resize horizontal', children=[
-        html.H2('Colorado Data',
-            className='title-text'),
+        html.H2('Colorado Data', className='title-text'),
         html.Div(className='agg-choices', children=[
             html.Div(className='radio-group r-group', children=[
                 dbc.RadioItems(className='btn-group agg-choices-radio',
@@ -51,30 +53,98 @@ def main():
         ],
         ),
         dbc.Tabs(className='var-tabs', children=[
-            dbc.Tab(className='by-1-tab', children=[
-                html.Span(className='selection-display', children=[
-                    html.P(BY_1_COUNTY, className='selection-display-value', id='by-1-selection-display'),
+            dbc.Tab(className='by-1-tab', id='by-1-tab', children=[
+                dbc.Accordion(flush=True, active_item=['options', 'variables'], always_open=True, children=[
+                    dbc.AccordionItem(title='Options', item_id='options', children=[
+                        html.Div(className='tab-options', children=[
+                            html.Div(className='tab-option', children=[
+                                html.P('Visible'),
+                                BooleanSwitch(id='by-1-visible', on=True, size=38, className='tab-option-switch', color='#0d6efd'),
+                            ],
+                            ),
+                            html.Div(className='tab-option', children=[
+                                html.P('Reverse Color'),
+                                BooleanSwitch(id='reverse-cmap', size=38, className='tab-option-switch', color='#0d6efd'),
+                            ],
+                            ),
+                        ],
+                        ),
+                    ],
+                    ),
+                    dbc.AccordionItem(title='Value', item_id='variables', children=[
+                        html.Span(id='selection-display-1', className='selection-display', children=[
+                            html.I(className='bi bi-arrow-90deg-right'),
+                            html.P(BY_1_COUNTY, className='selection-display-value', id='by-1-selection-display'),
+                        ],
+                        ),
+                        dash_table.DataTable(
+                            id='var-1-table',
+                            selected_cells=val_to_cells(VARS_COUNTY, BY_1_COUNTY),
+                            **TABLE_KWARGS,
+                        ),
+                    ],
+                    ),
                 ],
-                ),
-                dash_table.DataTable(
-                    id='var-1-table',
-                    selected_cells=val_to_cells(VARS_COUNTY, BY_1_COUNTY),
-                    **TABLE_KWARGS,
                 ),
             ],
             label='Primary',
             active_label_style={'color':'black', 'borderRadius':'6px 6px 0 0'},
             tab_style={'marginLeft': '20px'},
             ),
-            dbc.Tab(className='by-2-tab', children=[
-                html.Span(className='selection-display', children=[
-                    html.P(BY_1_DIST, className='selection-display-value', id='by-2-selection-display'),
+            dbc.Tab(className='by-2-tab', id='by-2-tab', children=[
+                dbc.Accordion(flush=True, active_item=['options', 'variables'], always_open=True, children=[
+                    dbc.AccordionItem(title='Options', item_id='options', children=[
+                        html.Div(className='tab-options', children=[
+                            html.Div(className='tab-option', children=[
+                                html.P('Visible'),
+                                BooleanSwitch(id='by-2-visible', on=True, size=38, className='tab-option-switch', color='#0d6efd'),
+                            ],
+                            ),
+                            html.Div(id='tab-option-scale', className='tab-option', children=[
+                                html.P('Scale'),
+                                html.Div(className='slider', children=[
+                                    daq.Slider(id='mark-scale-slider', updatemode='drag', value=6, min=2, max=20, step=2, size=65, color='#0d6efd'),
+                                    html.P(id='mark-scale-slider-output', children='6'),
+                                ],
+                                ),
+                            ],
+                            ),
+                            html.Div(id='tab-option-suppress-peak', className='tab-option', children=[
+                                html.P('Suppress Peak'),
+                                html.Div(className='slider', children=[
+                                    daq.Slider(id='mark-lower-peak-slider', updatemode='drag', value=0, min=0, max=10, step=1, size=65, color='#0d6efd'),
+                                    html.P(id='mark-lower-peak-slider-output', children='0'),
+                                ],
+                                ),
+                            ],
+                            ),
+                            html.Div(id='tab-option-linearize', className='tab-option', children=[
+                                html.P('Linearize'),
+                                html.Div(className='slider', children=[
+                                    daq.Slider(id='mark-straighten-slider', updatemode='drag', value=0, min=0, max=10, step=1, size=65, color='#0d6efd'),
+                                    html.P(id='mark-straighten-slider-output', children='0'),
+                                ],
+                                ),
+                            ],
+                            ),
+                        ],
+                        ),
+                    ],
+                    ),
+                    dbc.AccordionItem(title='Value', item_id='variables', children=[
+                        html.Span(id='selection-display-2', className='selection-display', children=[
+                            html.I(className='bi bi-arrow-90deg-right'),
+                            html.P(BY_1_DIST, className='selection-display-value', id='by-2-selection-display'),
+                        ],
+                        ),
+                        dash_table.DataTable(
+                            id='var-2-table',
+                            selected_cells=val_to_cells(VARS_COUNTY, BY_2_COUNTY),
+                            **TABLE_KWARGS,
+                        ),
+                    ],
+                    ),
                 ],
-                ),
-                dash_table.DataTable(
-                    id='var-2-table',
-                    selected_cells=val_to_cells(VARS_COUNTY, BY_2_COUNTY),
-                    **TABLE_KWARGS,
                 ),
             ],
             label='Secondary',
@@ -88,41 +158,63 @@ def main():
     html.Div(className='sidebar-handle', children=html.Div(className='sidebar-handle-line-outer', children=html.Div(className='sidebar-handle-line-inner'))),
     html.Div(className='main-content', children=[
     html.Div(className='header', children=[
-        html.Div(className='main-controls-box', children=[
-            html.Div(className='main-controls', children=[
-                html.Div(className='mark-scale', children=[
-                    html.Label('Marker Scale'),
-                    dcc.Input(className='mark-scale-input',
-                        type='number',
-                        min=1,
-                        max=40,
-                        step=1,
-                        value=MARK_SCALE,
-                        id='mark-scale-input',
+        html.Div(className='main-controls-parent', children=[
+            html.Div(className='main-controls-box', children=[
+                html.Div(className='switches', children=[
+                    html.Label(id='alt-label', className='main-label', children='Districts'),
+                    html.Div(className='switches-boxes', children=[
+                        html.Div(className='vertical-divider-left'),
+                        dbc.Checklist(className='switches-input',
+                            options=SWITCH_OPTIONS,
+                            value=SWITCHES,
+                            id="switches-input",
+                            switch=True,
+                        ),
+                    ],
                     ),
                 ],
                 ),
-                html.Div(className='details-1', children=[
-                    html.Label('Tooltip', htmlFor='details-1-dropdown'),
-                    dcc.Dropdown(className='var-choices-dropdown',
-                        options=VARS_COUNTY,
-                        value=TOOLTIP_COUNTY,
-                        id='details-1-dropdown',
-                        clearable=True,
-                        optionHeight=25,
-                        multi=True,
+                html.Div(className='tooltip-section', children=[
+                    html.Label(className='main-label', children='Tooltips'),
+                    html.Div(className='tooltip-boxes', children=[
+                        html.Div(className='vertical-divider-left'),
+                        html.Div(id='tooltip-box-1', className='tooltip-box', children=[
+                            html.Label(className='sub-label', children='Primary'),
+                            dcc.Dropdown(className='tooltip-dropdown',
+                                options=VARS_COUNTY,
+                                value=TOOLTIP_BY_1_COUNTY,
+                                id='tooltip-1-dropdown',
+                                clearable=True,
+                                optionHeight=25,
+                                multi=True,
+                                style={'text-overflow':'ellipsis'},
+                            ),
+                        ],
+                        ),
+                        html.Div(id='tooltip-box-2', className='tooltip-box', children=[
+                            html.Label(className='sub-label', children='Secondary'),
+                            dcc.Dropdown(className='tooltip-dropdown',
+                                options=VARS_COUNTY,
+                                value=TOOLTIP_BY_2_COUNTY,
+                                id='tooltip-2-dropdown',
+                                clearable=True,
+                                optionHeight=25,
+                                multi=True,
+                            ),
+                        ],
+                        ),
+                    ],
                     ),
                 ],
                 ),
             ],
             ),
-            html.Div(className='switches', children=[
-                dbc.Checklist(className='switches-input',
-                    options=SWITCH_OPTIONS,
-                    value=SWITCHES,
-                    id="switches-input",
-                    switch=True,
+            html.Div(id='download-container', className='download-container', children=[
+                dbc.Button(id='download-button', className='download-button', children=[
+                    html.I(className='bi bi-download'),
+                ],
                 ),
+                dcc.Download(id='download-map'),
             ],
             ),
         ],
@@ -155,6 +247,31 @@ def main():
         ),
     ],
     ),
+    make_tt('agg-choices-radio', 'right',
+            'Select the type of geographic area to aggregate by. '
+            "Note: 'School District' offers only education related data, "
+            'and can be viewed for 2012 only'
+    ),
+    make_tt('selection-display-1', 'right', 'Currently selected value for map colors'),
+    make_tt('selection-display-2', 'right', 'Currently selected value for circle markers'),
+    make_tt('tab-option-scale', 'right', 'Multiplier to increase the size of markers'),
+    make_tt('tab-option-suppress-peak', 'right',
+        'Uses logarithms to reduce extremes in heavily skewed data. '
+        "Use this instead of 'Scale' when most values appear tiny, except for a few large outliers. "
+        'It will increase the size of smaller values while leaving outliers alone.'
+    ),
+    make_tt('tab-option-linearize', 'right',
+        'Use this to help identify differences across areas when most values are similar in size, except for a handful of outliers. '
+        "Unlike 'Suppress Peak', this has no effect on the highest or lowest values. "
+        'It works by decreasing the rate of growth/decay in data that changes exponentially, '
+        'bringing it closer to a straight line (having the strongest effect on middle values).'
+    ),
+    make_tt('switches-input', 'left', 'Drop pins or draw borders on alternative aggregation areas'),
+    make_tt('tooltip-box-1', 'right', 'Extra values displayed when hovering over map areas'),
+    make_tt('tooltip-box-2', 'right', 'Extra values displayed when hovering over circle markers'),
+    make_tt('by-1-tab', 'top', 'Map colors'),
+    make_tt('by-2-tab', 'top', 'Circle markers'),
+    make_tt('download-container', 'left', 'Download the map as an html file you can open in your browser (without internet)'),
     ],
     ),
     ],
@@ -172,8 +289,9 @@ def main():
             Output('year-dropdown', 'value'),
             Output('year-dropdown', 'disabled'),
             Output('year-dropdown', 'style'),
-            Output('mark-scale-input', 'value'),
-            Output('details-1-dropdown', 'value'),
+            Output('tooltip-1-dropdown', 'value'),
+            Output('tooltip-2-dropdown', 'value'),
+            Output('alt-label', 'children'),
         ],
         Input('agg-choices-radio', 'value'),
     )
@@ -185,7 +303,9 @@ def main():
                 YEARS_COUNTY, YEAR_COUNTY,
                 False,
                 {'background-color': 'white'},
-                MARK_SCALE, TOOLTIP_COUNTY,
+                TOOLTIP_BY_1_COUNTY,
+                TOOLTIP_BY_2_COUNTY,
+                'Districts',
             )
 
         return (
@@ -194,7 +314,9 @@ def main():
             YEARS_DIST, YEAR_DIST,
             True,
             {'background-color': '#e6e6e6'},
-            MARK_SCALE, TOOLTIP_DIST
+            TOOLTIP_BY_1_DIST,
+            TOOLTIP_BY_2_DIST,
+            'Counties',
         )
     
 
@@ -208,17 +330,20 @@ def main():
             Input('year-dropdown', 'value'),
             Input('var-1-table', 'selected_cells'),
             Input('var-2-table', 'selected_cells'),
+            Input('by-1-visible', 'on'),
+            Input('by-2-visible', 'on'),
+            Input('tooltip-1-dropdown', 'value'),
+            Input('tooltip-2-dropdown', 'value'),
+            Input('mark-straighten-slider', 'value'),
+            Input('mark-lower-peak-slider', 'value'),
+            Input('mark-scale-slider', 'value'),
+            Input('reverse-cmap', 'on'),
             Input('switches-input', 'value'),
-            Input('mark-scale-input', 'value'),
-            Input('details-1-dropdown', 'value'),
         ],
     )
-    def var_change(agg_str, year, by_1, by_2, switches, mark_scale, tooltip_xtra):
-        show_by_1 = True if 'show_by_1' in switches else False
-        show_by_2 = True if 'show_by_2' in switches else False
+    def var_change(agg_str, year, by_1, by_2, show_by_1, show_by_2, by_1_tooltip_xtra, by_2_tooltip_xtra, mark_straighten, mark_lower_peak, mark_scale, reverse_cmap, switches):
         show_alt_pins = True if 'show_alt_pins' in switches else False
         show_alt_borders = True if 'show_alt_borders' in switches else False
-        reverse_cmap = True if 'reverse_cmap' in switches else False
         
         if show_by_1 == False:
             by_1 = None
@@ -232,15 +357,18 @@ def main():
 
         return (
             plot(
-                year,
-                by_1,
-                by_2,
-                agg_str,
-                tooltip_xtra,
-                mark_scale,
-                show_alt_borders,
-                show_alt_pins,
-                reverse_cmap,
+                agg_str=agg_str,
+                year=year,
+                by_1=by_1,
+                by_2=by_2,
+                by_1_tooltip_xtra=by_1_tooltip_xtra,
+                by_2_tooltip_xtra=by_2_tooltip_xtra,
+                mark_straighten=mark_straighten,
+                mark_lower_peak=mark_lower_peak,
+                mark_scale=mark_scale,
+                show_alt_borders=show_alt_borders,
+                show_alt_pins=show_alt_pins,
+                reverse_cmap=reverse_cmap,
             ),
             [],
         )
@@ -266,13 +394,73 @@ def main():
     def selection_display(agg, by_2):
         by_2 = cells_to_val(agg, by_2)
         return by_2
+    
+    @app.callback(
+        Output('mark-scale-slider-output', 'children'),
+        Input('mark-scale-slider', 'value')
+    )
+    def update_slider_label(val):
+        return str(val)
 
+    @app.callback(
+        Output('mark-lower-peak-slider-output', 'children'),
+        Input('mark-lower-peak-slider', 'value')
+    )
+    def update_slider_label(val):
+        return str(val)
+
+    @app.callback(
+        Output('mark-straighten-slider-output', 'children'),
+        Input('mark-straighten-slider', 'value')
+    )
+    def update_slider_label(val):
+        return str(val)
+    
+    @app.callback(
+        Output('download-map', 'data'),
+        Input('download-button', 'n_clicks'),
+        [
+            State('map', 'srcDoc'),
+            State('agg-choices-radio', 'value'),
+            State('year-dropdown', 'value'),
+            State('var-1-table', 'selected_cells'),
+            State('var-2-table', 'selected_cells'),
+            State('by-1-visible', 'on'),
+            State('by-2-visible', 'on'),
+        ],
+        prevent_initial_call=True,
+    )
+    def download_map(n_clicks, map_src, agg_str, year, by_1, by_2, show_by_1, show_by_2):
+        if map_src != None:
+            if show_by_1 == False:
+                by_1 = None
+            else:
+                by_1 = cells_to_val(agg_str, by_1)
+
+            if show_by_2 == False:
+                by_2 = None
+            else:
+                by_2 = cells_to_val(agg_str, by_2)
+
+            name_parts = [s for s in [agg_str, year, by_1, by_2] if s != None]
+            name_parts = filename_friendly(name_parts)
+            if by_1 and by_2:
+                name_parts.insert(3, 'by')
+
+            filename = '_'.join(name_parts)
+            return dict(content=map_src, filename=f'{filename}.html')
+
+        return dict(content='You downloaded before the map loaded. Oops!', filename='not_a_map.html')
+
+        
+
+
+''' COMPONENTS ----------------------------------------------------------- '''
+
+checkmark = html.I(className='bi bi-check-lg view-check')
 
 
 ''' DATA ----------------------------------------------------------------- '''
-
-df_county = META['county']['df']
-df_dist = META['dist']['df']
 
 def cells_to_val(agg, cells:list) -> str:
     if agg == 'County':
@@ -282,6 +470,43 @@ def cells_to_val(agg, cells:list) -> str:
 
 def val_to_cells(cols, val:str) -> list:
     return [{'column': 0, 'row': cols.index(val)}]
+
+
+def filename_friendly(parts:list) -> list:
+    for i, s in enumerate(parts):
+        s = str(s)
+        s = s.lower() \
+            .replace('%', 'percent') \
+            .replace('<=', 'lteq') \
+            .replace('>=', 'gteq') \
+            .replace('<', 'lt') \
+            .replace('>', 'gt') \
+            .replace('&', 'and') \
+            .replace(' - ', '-') \
+            .replace('/', '-')
+
+        s = re.sub('[:(,\.$)]', '', s)
+
+        s = s.replace(' ', '-') \
+            .strip()
+
+        parts[i] = s
+
+    return parts
+    
+
+def make_tt(target_id, pos, text, hide=50, show=50):
+    return dbc.Tooltip(
+        text,
+        className='button-tooltip',
+        target=target_id,
+        placement=pos,
+        delay=dict(hide=hide, show=show)
+    )
+    
+
+df_county = META['county']['df']
+df_dist = META['dist']['df']
 
 
 INDEX_COUNTY = META['county']['idx']
@@ -303,16 +528,15 @@ BY_1_COUNTY = META['county']['default_1']
 BY_1_DIST = META['dist']['default_1']
 BY_2_COUNTY = META['county']['default_2']
 BY_2_DIST = META['dist']['default_2']
-TOOLTIP_COUNTY = META['county']['tooltip']
-TOOLTIP_DIST = META['dist']['tooltip']
+TOOLTIP_BY_1_COUNTY = META['county']['tooltip_1']
+TOOLTIP_BY_1_DIST = META['dist']['tooltip_1']
+TOOLTIP_BY_2_COUNTY = META['county']['tooltip_2']
+TOOLTIP_BY_2_DIST = META['dist']['tooltip_2']
 
-SWITCHES = ['show_by_1', 'show_by_2']
+SWITCHES = []
 SWITCH_OPTIONS = [
-    {"label": "Primary", "value": 'show_by_1'},
-    {"label": "Secondary", "value": 'show_by_2'},
     {"label": "Pins", "value": 'show_alt_pins'},
     {"label": "Borders", "value": 'show_alt_borders'},
-    {"label": "Reverse Color", "value": 'reverse_cmap'},
 ]
 
 MARK_SCALE = 5
